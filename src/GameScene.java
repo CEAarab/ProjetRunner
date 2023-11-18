@@ -1,13 +1,12 @@
 import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.util.Duration;
 
-import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
 
 
 class GameScene extends Scene {
@@ -16,19 +15,31 @@ class GameScene extends Scene {
     private StaticThing rb;
     private int numberOfLives;
     private Hero hero;
+    private long lastUpdateTime = 0;
+    private double backgroundPosition = 0;
+    private static final double BACKGROUND_SPEED = 0.5;
+    private double croppedWidth = 0;
+    private List<ImageView> backgroundImages = new ArrayList<>();
+    private int imageCount = 5;
+    private int timerCounter = 0;
+    private int addImageInterval = 60;
 
-    public GameScene(Camera camera) {
-        super(new Group(), 800, 600);
 
+    public GameScene(Group root,Camera camera) {
+        super(root, 800, 600);
         this.camera = camera;
         this.numberOfLives = 3;
         Image mapImage = new Image("file:C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\desert.png");
+        for (int i = 0; i < imageCount; i++) {
+            ImageView imageView = new ImageView(mapImage);
+            imageView.setLayoutX(mapImage.getWidth() * i);
+            imageView.setFitWidth(800);
+            imageView.setFitHeight(600);
 
-        ImageView mapView = new ImageView(mapImage);
-        mapView.setFitWidth(800);
-        mapView.setFitHeight(600);
+            backgroundImages.add(imageView);
+            root.getChildren().add(imageView);
+        }
 
-        ((Group) this.getRoot()).getChildren().add(mapView);
 
         lb = new StaticThing(20, 20, "C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\score.png");
         rb = new StaticThing(20, 20, "C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\nbre.png");
@@ -50,23 +61,41 @@ class GameScene extends Scene {
 
         hero = new Hero(115, 415, "file:C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\heros.png", "run");
 
-        ((Group) this.getRoot()).getChildren().add(hero.getSprite());
+        root.getChildren().add(hero.getSprite());
 
         AnimationTimer timer = new AnimationTimer() {
             public void handle(long time) {
+                if (lastUpdateTime == 0) {
+                    lastUpdateTime = time;
+                    return;
+                }
                 hero.update();
                 GameScene.update(camera);
-                //camera update needed !
+                for (ImageView imageView : backgroundImages) {
+                    imageView.setLayoutX(imageView.getLayoutX() - 10);
+                }
+
+                if (timerCounter >= addImageInterval) {
+                    ImageView newImage = new ImageView(mapImage);
+                    newImage.setLayoutX(mapImage.getWidth() * imageCount);
+                    backgroundImages.add(newImage);
+                    root.getChildren().add(newImage);
+                    imageCount++;
+                    timerCounter = 0;
+                } else {
+                    timerCounter++;
+                }
             }
         };
+        this.setOnMouseClicked(event -> {
+            System.out.println("Jump");
+            hero.jump();
+        });
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(200),event -> render()));
-        Timeline timeline2 = new Timeline(new KeyFrame(Duration.millis(200),event -> update(camera)));
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
-        timeline2.setCycleCount(Timeline.INDEFINITE);
-        timeline2.play();
+
+
         timer.start();
+
     }
 
     public static void update(Camera camera) {

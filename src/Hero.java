@@ -3,5 +3,4 @@ public class Hero extends AnimatedThing {
         super(x, y, fileName, Sit);
     }
 
-
 }

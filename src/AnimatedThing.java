@@ -12,6 +12,7 @@ public abstract class AnimatedThing {
     private int maxIndex;
     private double windowSize;
     private double offset;
+    private String sit;
 
 
 
@@ -23,30 +24,34 @@ public abstract class AnimatedThing {
             case "run":
                 this.attitude = 0;
                 this.index = 0;
-                this.maxIndex = 5;
+                this.maxIndex = 6;
                 this.windowSize = 85;
                 this.offset = 100;
+                this.sit = "run";
                 break;
             case "jump":
                 this.attitude = 1.6;
                 this.index = 0;
-                this.maxIndex = 1;
+                this.maxIndex = 2;
                 this.windowSize = 85;
                 this.offset = 100;
+                this.sit = "jump";
                 break;
             case "shoot":
                 this.attitude = 3.3;
                 this.index = 0;
-                this.maxIndex = 5;
-                this.windowSize = 81;
+                this.maxIndex = 6;
+                this.windowSize = 82;
                 this.offset = 100;
+                this.sit = "shoot";
                 break;
             case "jShoot":
                 this.attitude = 4.92;
                 this.index = 0;
-                this.maxIndex = 1;
+                this.maxIndex = 2;
                 this.windowSize = 85;
                 this.offset = 100;
+                this.sit = "jShoot";
                 break;
         }
 
@@ -59,8 +64,33 @@ public abstract class AnimatedThing {
         sprite.setY(y);
     }
 
+    public void setSit(String sit) {
+        this.sit = sit;
+    }
+
     public ImageView getSprite() {
         return sprite;
+    }
+    public void jump() {
+        if (getY() == 415) {
+            setY(getY() - 100);
+        }
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public double getY() {
+        return y;
     }
 
     public void updateFrame() {
