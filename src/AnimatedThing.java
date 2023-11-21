@@ -12,7 +12,7 @@ public abstract class AnimatedThing {
     private int maxIndex;
     private double windowSize;
     private double offset;
-    private String sit;
+    private static String sit;
 
 
 
@@ -72,9 +72,14 @@ public abstract class AnimatedThing {
         return sprite;
     }
     public void jump() {
+        setSit("jump");
         if (getY() == 415) {
-            setY(getY() - 100);
+            setY(315);
+            sprite.setY(getY());
         }
+    }
+    public void back() {
+        sprite.setY(415);
     }
 
     public double getX() {
@@ -98,10 +103,16 @@ public abstract class AnimatedThing {
     }
     public void update() {
         index = (index + 1) % maxIndex;
+        //TranslateTransition
         for(int i=0;i<10000000;i++){
             index = (index ) % maxIndex;
         }
         updateFrame();
     }
 
+    public static String getSit() {
+        System.out.println(sit);
+        if(sit==null) return "run";
+        return sit;
+    }
 }

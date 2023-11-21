@@ -59,7 +59,7 @@ class GameScene extends Scene {
             ((Group) this.getRoot()).getChildren().add(heart.getImageView());
         }
 
-        hero = new Hero(115, 415, "file:C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\heros.png", "run");
+        hero = new Hero(115, 415, "file:C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\heros.png", AnimatedThing.getSit());
 
         root.getChildren().add(hero.getSprite());
 
