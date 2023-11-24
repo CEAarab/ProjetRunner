@@ -16,11 +16,9 @@ class GameScene extends Scene {
     private int numberOfLives;
     private Hero hero;
     private long lastUpdateTime = 0;
-    private double backgroundPosition = 0;
-    private static final double BACKGROUND_SPEED = 0.5;
-    private double croppedWidth = 0;
+
     private List<ImageView> backgroundImages = new ArrayList<>();
-    private int imageCount = 5;
+    private int imageCount = 50;
     private int timerCounter = 0;
     private int addImageInterval = 60;
 
@@ -88,11 +86,8 @@ class GameScene extends Scene {
             }
         };
         this.setOnMouseClicked(event -> {
-            System.out.println("Jump");
             hero.jump();
         });
-
-
 
         timer.start();
 

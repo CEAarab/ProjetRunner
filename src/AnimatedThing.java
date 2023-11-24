@@ -27,7 +27,6 @@ public abstract class AnimatedThing {
                 this.maxIndex = 6;
                 this.windowSize = 85;
                 this.offset = 100;
-                this.sit = "run";
                 break;
             case "jump":
                 this.attitude = 1.6;
@@ -35,7 +34,6 @@ public abstract class AnimatedThing {
                 this.maxIndex = 2;
                 this.windowSize = 85;
                 this.offset = 100;
-                this.sit = "jump";
                 break;
             case "shoot":
                 this.attitude = 3.3;
@@ -43,7 +41,6 @@ public abstract class AnimatedThing {
                 this.maxIndex = 6;
                 this.windowSize = 82;
                 this.offset = 100;
-                this.sit = "shoot";
                 break;
             case "jShoot":
                 this.attitude = 4.92;
@@ -51,7 +48,6 @@ public abstract class AnimatedThing {
                 this.maxIndex = 2;
                 this.windowSize = 85;
                 this.offset = 100;
-                this.sit = "jShoot";
                 break;
         }
 
@@ -72,10 +68,15 @@ public abstract class AnimatedThing {
         return sprite;
     }
     public void jump() {
-        setSit("jump");
         if (getY() == 415) {
             setY(315);
             sprite.setY(getY());
+        }
+    }
+    public void down(){
+        if(getY() == 315){
+            setY(415);
+            sprite.setY(415);
         }
     }
     public void back() {
