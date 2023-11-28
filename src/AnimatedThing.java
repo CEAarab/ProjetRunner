@@ -1,94 +1,131 @@
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.geometry.Rectangle2D;
+import javafx.util.Duration;
 
 public abstract class AnimatedThing {
     private double x;
     private double y;
+    private double width;
+    private double height;
+    private double ratio_w;
+    private double ratio_h;
     private ImageView sprite;
     private double attitude;
-
     private int index;
     private int maxIndex;
     private double windowSize;
     private double offset;
-    private static String sit;
+    protected final int windowSizeX;
+    protected final int windowSizeY;
+    protected final int offsetBetweenFrames;
+    private int durationBetweenFrames;
 
+    public AnimatedThing(double posX, double posY, double objWidth, double objHeight, int attitudeVal,
+                         String file, int currentIndex, int frameDuration, int maxIndexValue,
+                         int windowX, int windowY, int frameOffset) {
+        this.attitude = attitudeVal;
+        this.index = currentIndex;
+        this.durationBetweenFrames = frameDuration;
+        this.maxIndex = maxIndexValue;
+        this.windowSizeX = windowX;
+        this.windowSizeY = windowY;
+        this.offsetBetweenFrames = frameOffset;
 
-
-
-    public AnimatedThing(double x, double y, String fileName, String sit) {
-        this.x = x;
-        this.y = y;
-        switch(sit) {
-            case "run":
-                this.attitude = 0;
-                this.index = 0;
-                this.maxIndex = 6;
-                this.windowSize = 85;
-                this.offset = 100;
-                break;
-            case "jump":
-                this.attitude = 1.6;
-                this.index = 0;
-                this.maxIndex = 2;
-                this.windowSize = 85;
-                this.offset = 100;
-                break;
-            case "shoot":
-                this.attitude = 3.3;
-                this.index = 0;
-                this.maxIndex = 6;
-                this.windowSize = 82;
-                this.offset = 100;
-                break;
-            case "jShoot":
-                this.attitude = 4.92;
-                this.index = 0;
-                this.maxIndex = 2;
-                this.windowSize = 85;
-                this.offset = 100;
-                break;
-        }
-
-        Image spriteSheet = new Image(fileName);
-        sprite = new ImageView(spriteSheet);
-
-        updateFrame();
-
-        sprite.setX(x);
-        sprite.setY(y);
-    }
-
-    public void setSit(String sit) {
-        this.sit = sit;
+        Image image = new Image(file);
+        this.sprite = new ImageView(image);
+        this.sprite.setViewport(createViewport(currentIndex, attitudeVal, maxIndexValue));
+        this.sprite.setX(posX);
+        this.sprite.setY(posY);
+        this.width = objWidth;
+        this.height = objHeight;
+        this.x = posX;
+        this.y = posY;
+        this.ratio_h = 1;
+        this.ratio_w = 1;
     }
 
     public ImageView getSprite() {
         return sprite;
     }
+
+    public void setSprite(ImageView sprite) {
+        this.sprite = sprite;
+    }
+
+    public double getAttitude() {
+        return attitude;
+    }
+
+    public void setAttitude(double attitude) {
+        this.attitude = attitude;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getMaxIndex() {
+        return maxIndex;
+    }
+
+    public void setMaxIndex(int maxIndex) {
+        this.maxIndex = maxIndex;
+    }
+
+    public double getWindowSize() {
+        return windowSize;
+    }
+
+    public void setWindowSize(double windowSize) {
+        this.windowSize = windowSize;
+    }
+
+    public double getOffset() {
+        return offset;
+    }
+
+    public void setOffset(double offset) {
+        this.offset = offset;
+    }
+
+    abstract public Rectangle2D createViewport(int index, double altitude, int maxIndex);
+
     public void jump() {
-        if (getY() == 415) {
-            setY(315);
-            sprite.setY(getY());
-        }
-    }
-    public void down(){
-        if(getY() == 315){
-            setY(415);
-            sprite.setY(415);
-        }
-    }
-    public void back() {
-        sprite.setY(415);
-    }
+        double acc = 0.2;
+        attitude = 1;
+        y = sprite.getY();
 
-    public double getX() {
-        return x;
-    }
+        Timeline jumpTimeline = new Timeline();
+        jumpTimeline.setCycleCount(5);
+        jumpTimeline.getKeyFrames().add(new KeyFrame(Duration.millis(100),
+                event -> {
+                    y -= (0.2 * height * ratio_h) * acc;
+                    sprite.setY(y);
+                }
+        ));
 
-    public void setX(double x) {
-        this.x = x;
+        Timeline gravityTimeline = new Timeline();
+        gravityTimeline.setCycleCount(5);
+        gravityTimeline.getKeyFrames().add(new KeyFrame(Duration.millis(100),
+                event -> {
+                    y += (0.2 * height * ratio_h) * acc;
+                    sprite.setY(y);
+                }
+        ));
+
+        jumpTimeline.setOnFinished(e -> {
+            gravityTimeline.setOnFinished(event -> attitude = 0);
+            gravityTimeline.play();
+        });
+
+        jumpTimeline.play();
     }
 
     public void setY(double y) {
@@ -97,23 +134,5 @@ public abstract class AnimatedThing {
 
     public double getY() {
         return y;
-    }
-
-    public void updateFrame() {
-        sprite.setViewport(new Rectangle2D(index * windowSize, attitude * offset, windowSize, offset));
-    }
-    public void update() {
-        index = (index + 1) % maxIndex;
-        //TranslateTransition
-        for(int i=0;i<10000000;i++){
-            index = (index ) % maxIndex;
-        }
-        updateFrame();
-    }
-
-    public static String getSit() {
-        System.out.println(sit);
-        if(sit==null) return "run";
-        return sit;
     }
 }

@@ -1,13 +1,8 @@
-import javafx.animation.AnimationTimer;
-
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import javafx.util.Duration;
 
 class GameScene extends Scene {
     private Camera camera;
@@ -15,41 +10,19 @@ class GameScene extends Scene {
     private StaticThing rb;
     private int numberOfLives;
     private Hero hero;
-    private long lastUpdateTime = 0;
 
-    private List<ImageView> backgroundImages = new ArrayList<>();
-    private int imageCount = 50;
-    private int timerCounter = 0;
-    private int addImageInterval = 60;
-
-
-    public GameScene(Group root,Camera camera) {
+    public GameScene(Group root) {
         super(root, 800, 600);
-        this.camera = camera;
+
+        this.camera = new Camera(0, 0);
         this.numberOfLives = 3;
-        Image mapImage = new Image("file:C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\desert.png");
-        for (int i = 0; i < imageCount; i++) {
-            ImageView imageView = new ImageView(mapImage);
-            imageView.setLayoutX(mapImage.getWidth() * i);
-            imageView.setFitWidth(800);
-            imageView.setFitHeight(600);
 
-            backgroundImages.add(imageView);
-            root.getChildren().add(imageView);
-        }
-
-
-        lb = new StaticThing(20, 20, "C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\score.png");
-        rb = new StaticThing(20, 20, "C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\nbre.png");
-
-        lb.getImageView().setTranslateX(0);
-        rb.getImageView().setTranslateX(600);
-
-        ((Group) this.getRoot()).getChildren().addAll(lb.getImageView(), rb.getImageView());
+        this.lb = new StaticThing(800, 600, "C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\desert.png");
+        this.rb = new StaticThing(800, 600, "C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\desert.png");
+        root.getChildren().addAll(lb.getImageView(), rb.getImageView());
 
         double totalWidth = numberOfLives * 30;
         double startX = 240;
-
         for (int i = 0; i < numberOfLives; i++) {
             StaticThing heart = new StaticThing(20, 20, "C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\heart.jpg");
             heart.getImageView().setTranslateX(startX + i * 30);
@@ -57,62 +30,54 @@ class GameScene extends Scene {
             ((Group) this.getRoot()).getChildren().add(heart.getImageView());
         }
 
-        hero = new Hero(115, 415, "file:C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\heros.png", AnimatedThing.getSit());
-
+        Hero hero = new Hero(80, 400, 600, 800, 0, 6);
+        this.hero = hero;
         root.getChildren().add(hero.getSprite());
 
-        AnimationTimer timer = new AnimationTimer() {
-            public void handle(long time) {
-                if (lastUpdateTime == 0) {
-                    lastUpdateTime = time;
-                    return;
-                }
-                hero.update();
-                GameScene.update(camera);
-                for (ImageView imageView : backgroundImages) {
-                    imageView.setLayoutX(imageView.getLayoutX() - 10);
-                }
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(3), event -> update()));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
 
-                if (timerCounter >= addImageInterval) {
-                    ImageView newImage = new ImageView(mapImage);
-                    newImage.setLayoutX(mapImage.getWidth() * imageCount);
-                    backgroundImages.add(newImage);
-                    root.getChildren().add(newImage);
-                    imageCount++;
-                    timerCounter = 0;
-                } else {
-                    timerCounter++;
-                }
-            }
-        };
+        Timeline timeline2 = new Timeline(new KeyFrame(Duration.millis(200), event -> updateHero()));
+        timeline2.setCycleCount(Timeline.INDEFINITE);
+        timeline2.play();
+
         this.setOnMouseClicked(event -> {
+            hero.setAttitude(1);
+            updateHero();
             hero.jump();
         });
-
-        timer.start();
-
     }
 
-    public static void update(Camera camera) {
+    private void updateHero() {
+        hero.setIndex((hero.getIndex() + 1) % hero.getMaxIndex());
+        if (hero.getAttitude() == 0) {
+            hero.setMaxIndex(6);
+        } else if (hero.getAttitude() == 1) {
+            hero.setMaxIndex(2);
+        } else if (hero.getAttitude() == 2) {
+            hero.setMaxIndex(6);
+        } else if (hero.getAttitude() == 3) {
+            hero.setMaxIndex(2);
+        }
+        hero.getSprite().setViewport(hero.createViewport(hero.getIndex(), hero.getAttitude(), hero.getMaxIndex()));
+    }
+
+    private void update() {
         camera.setX(camera.getX() + 1);
-
-    }
-
-    public Camera getGameCamera() {
-        return camera;
+        render();
     }
 
     public void render() {
         double cameraX = camera.getX();
         double width = lb.getImageView().getFitWidth();
-        double height = lb.getImageView().getFitHeight();
-        double lbX = - cameraX % width;
-        double rbX = width + lbX;
-        lb.getImageView().setX(lbX);
+        double leftBackgroundX = -cameraX % width;
+        double rightBackgroundX = width + leftBackgroundX;
+
+        lb.getImageView().setX(leftBackgroundX);
         lb.getImageView().setY(0);
-        rb.getImageView().setX(rbX);
+
+        rb.getImageView().setX(rightBackgroundX);
         rb.getImageView().setY(0);
-
     }
-
 }

@@ -10,7 +10,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        GameScene gameScene = new GameScene(new Group(),new Camera(800, 600));
+        GameScene gameScene = new GameScene(new Group());
 
         primaryStage.setTitle("Game App");
         primaryStage.setScene(gameScene);
