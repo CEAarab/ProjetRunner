@@ -21,7 +21,6 @@ class GameScene extends Scene {
         this.rb = new StaticThing(800, 600, "C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\desert.png");
         root.getChildren().addAll(lb.getImageView(), rb.getImageView());
 
-        double totalWidth = numberOfLives * 30;
         double startX = 240;
         for (int i = 0; i < numberOfLives; i++) {
             StaticThing heart = new StaticThing(20, 20, "C:\\Users\\Dell_Latitude_3510\\Downloads\\Ressources audio et image pour le runner-20231107\\img\\heart.jpg");
@@ -54,10 +53,6 @@ class GameScene extends Scene {
         if (hero.getAttitude() == 0) {
             hero.setMaxIndex(6);
         } else if (hero.getAttitude() == 1) {
-            hero.setMaxIndex(2);
-        } else if (hero.getAttitude() == 2) {
-            hero.setMaxIndex(6);
-        } else if (hero.getAttitude() == 3) {
             hero.setMaxIndex(2);
         }
         hero.getSprite().setViewport(hero.createViewport(hero.getIndex(), hero.getAttitude(), hero.getMaxIndex()));

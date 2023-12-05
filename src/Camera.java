@@ -1,15 +1,12 @@
 public class Camera {
-    // Coordinates
     private int x;
     private int y;
 
-    // Constructor
     public Camera(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    // Getter methods
     public int getX() {
         return x;
     }
@@ -24,7 +21,6 @@ public class Camera {
         this.y = y;
     }
 
-    // Overloaded toString method
     @Override
     public String toString() {
         return x + ", " + y;

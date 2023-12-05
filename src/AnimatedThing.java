@@ -98,35 +98,35 @@ public abstract class AnimatedThing {
     abstract public Rectangle2D createViewport(int index, double altitude, int maxIndex);
 
     public void jump() {
-        double acc = 0.2;
-        attitude = 1;
-        y = sprite.getY();
+        double acceleration = 0.2;
 
-        Timeline jumpTimeline = new Timeline();
-        jumpTimeline.setCycleCount(5);
-        jumpTimeline.getKeyFrames().add(new KeyFrame(Duration.millis(100),
+
+        Timeline ascendTimeline = new Timeline();
+        ascendTimeline.setCycleCount(5);
+        ascendTimeline.getKeyFrames().add(new KeyFrame(Duration.millis(100),
                 event -> {
-                    y -= (0.2 * height * ratio_h) * acc;
+                    y -= (0.2 * height * ratio_h) * acceleration;
                     sprite.setY(y);
                 }
         ));
 
-        Timeline gravityTimeline = new Timeline();
-        gravityTimeline.setCycleCount(5);
-        gravityTimeline.getKeyFrames().add(new KeyFrame(Duration.millis(100),
+        Timeline descendTimeline = new Timeline();
+        descendTimeline.setCycleCount(5);
+        descendTimeline.getKeyFrames().add(new KeyFrame(Duration.millis(100),
                 event -> {
-                    y += (0.2 * height * ratio_h) * acc;
+                    y += (0.2 * height * ratio_h) * acceleration;
                     sprite.setY(y);
                 }
         ));
 
-        jumpTimeline.setOnFinished(e -> {
-            gravityTimeline.setOnFinished(event -> attitude = 0);
-            gravityTimeline.play();
+        ascendTimeline.setOnFinished(e -> {
+            descendTimeline.setOnFinished(event -> attitude = 0);
+            descendTimeline.play();
         });
 
-        jumpTimeline.play();
+        ascendTimeline.play();
     }
+
 
     public void setY(double y) {
         this.y = y;
